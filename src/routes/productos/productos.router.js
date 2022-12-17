@@ -3,35 +3,38 @@ const authMiddleware = require("../../middlewares/authMiddleware")
 const errorMiddleware = require("../../middlewares/errorMiddleware")
 
 const router = express.Router();
+const ProductService = require('../../products/products.service');
+const newFile = new ProductService();
 
-let products = [];
 
-router.get("/", (_req, res) => {
+
+router.get("/", async (_req, res) => {
     try{
+        const products = await newFile.getAll();
         res.status(200).json(products);
     }catch(err){
         errorMiddleware(err);
     }
 })
 
-router.post("/", authMiddleware, (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
     try{
         const { body } = req;
-        products.push({ ...body, id: (products.length + 1) || 1 });
-        res.redirect("/static")
+        const data = await newFile.save (body);
+        res.status(200).json(data)
     }catch(err){
         errorMiddleware(err);
     }
 })
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
     try{
-        const { id } = req.params;
-        const selected = products.filter(i => i.id == id)
-        if (selected != undefined){
+        const { id } = req.params ;
+        const product = await newFile.getById(id)
+        if (product != undefined){
             res.status(200).json({
                 success: true,
-                data: selected
+                data: product
             })
         } else {
             res.status(404).json({
@@ -45,43 +48,23 @@ router.get("/:id", (req, res) => {
 })
 
 router.put("/:id", authMiddleware, async(req, res) => {
-    const { id } = req.params;
     try{
-        const existe = products.findIndex(it => it.id == id)
-        if (existe != -1){
-            const newArray = products.map(it => {
-                if (it.id == id) {
-                    return ({...req.body})
-                }
-                return it;
-            })
-            products = newArray;
-            res.redirect("/static");
-        } else {
-            res.status(404).json({
-                success: false,
-                error: "producto no encontrado"
-            })
-        }
+        const { id } = req.params;
+        const {body} = req;
+        const data = await newFile.updateProduct(id,body);
+        res.status(200).json(data)
+      
     }catch(err){
         errorMiddleware(err);
     }
 })
 
-router.delete("/", authMiddleware, async(req, res) => {
+router.delete("/:id", authMiddleware, async(req, res) => {
     try{
-        const { body } = req;
-        console.log("deleteando")
-        const selected = await products.filter(i => i.id != body.id);
-        if (selected != undefined){
-            products = selected;
-            res.redirect("/static")
-        } else {
-            res.status(404).json({
-                success: false,
-                error: "producto no encontrado"
-            })
-        }
+        const {id} = req.params;
+    
+        const data = await newFile.deleteById(id);
+        res.status(200).json(data)
     }catch(err){
         errorMiddleware(err);
     }

@@ -1,16 +1,15 @@
 const express = require("express");
 const authMiddleware = require("../../middlewares/authMiddleware")
 const router = express.Router();
-const {v4: uuidv4} = require('uuid');
 
-const productsClass = require('../../services/products/products.service');
 
-const products = new productsClass();
+const ProductService = require('../../services/db/products/products.knex');
+const products = new ProductService();
 
 
 router.get('/',async (_req,res,next)=>{
     try {
-        const data = await products.getAllProducts();
+        const data = await products.getAll();
         res.status(200).json(data)
     } catch (error) {
         next(error)
@@ -21,11 +20,7 @@ router.get('/',async (_req,res,next)=>{
 router.post ('/', authMiddleware, async (req,res,next)=>{
     try {
         const {body}= req;
-        Object.assign(body,{
-            uuid: uuidv4(),
-            timestamp: Date.now()
-        });
-        const data = await products.createProducts(body);
+        const data = await products.createProduct(body);
         res.status(200).json(data)
         
     } catch (error) {

@@ -1,3 +1,8 @@
+//---------------------- COMENTARIO-------------------------------------------- //
+// Este modulo se deja sin efecto ya que la persistencia de los archivos se hace mediante la base de datos sql
+// se crea el servicio db para reemplazar este modulo
+
+
 const fs = require ('fs');
 
 

@@ -42,4 +42,49 @@ router.post("/", authMiddleware, async (req, res, next) => {
     }
 })
 
+router.put("/:productUuid", authMiddleware, async (req, res, next) => {
+    try{
+        const { productUuid } = req.params;
+        const { body } = req;
+        if(_.isNil(productUuid)) res.status(400).json({success:false, message: "ERROR (product missing)"})
+        const products = await getProductModule();
+        const product = new products();
+        const data = await product.updateProduct(productUuid, body);
+        if(!data.success) res.status(500).json(data);
+        res.status(200).json(data);
+    } catch(err) {
+        next(err);
+    }
+})
+
+router.get("/:productUuid", async (req, res, next) =>{
+    try{
+        const { productUuid } = req.params;
+        if(_.isNil(productUuid)) res.status(400).json({success:false, message: "ERROR (product missing)"});
+        const products = await getProductModule();
+        const product = new products();
+        const data = await product.getProduct(productUuid);
+        if(!data.success) res.status(500).json(data);
+        res.status(200).json(data);
+    } catch(err) {
+        next(err);
+    }
+})
+
+router.delete("/:productUuid", authMiddleware ,async (req, res, next) =>{
+    try{
+        const { productUuid } = req.params;
+        if(_.isNil(productUuid)) res.status(400).json({success:false, message: "ERROR (product missing)"})
+        const products = await getProductModule();
+        const product = new products();
+        const data = await product.deleteProduct(productUuid);
+        if(!data.success) res.status(500).json(data);
+        res.status(200).json(data);
+    } catch(err) {
+        next(err);
+    }
+})
+
+
+
 export default router;

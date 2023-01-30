@@ -2,6 +2,7 @@
   "name": "coder-backend",
   "version": "1.0.0",
   "description": "Coderhouse Backend Course",
+  "type": "module",
   "main": "test.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,6 +17,7 @@
     "express": "^4.18.2",
     "knex": "^2.4.0",
     "lodash": "^4.17.21",
+    "mongoose": "^6.9.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "socket.io": "^4.5.4",

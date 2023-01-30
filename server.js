@@ -1,8 +1,8 @@
 //Express app
-const app = require("./app");
+import app from "./app.js";
 
 //ENV
-require('dotenv').config();
+
 const PORT = process.env.PORT || 8080;
 
 

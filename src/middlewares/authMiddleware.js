@@ -7,4 +7,4 @@ const authMiddleware = (_req, res, next) => {
     console.info("Pasó la auditoria")
     next()
 }
-module.exports = authMiddleware;
+export default authMiddleware;

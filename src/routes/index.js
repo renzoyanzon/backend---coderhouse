@@ -1,10 +1,10 @@
-const express = require("express");
+import express from "express";
 
 const { Router } = express;
 const router = Router();
 
-const productsRouter = require("./products/products.router")
-const cartRouter = require('./carts/cart.router');
+import productsRouter from "./products/products.router.js";
+import cartRouter from './carts/cart.router.js';
 
 router.get("/health", (_req, res)=>{
     res.status(200).json({
@@ -16,4 +16,4 @@ router.get("/health", (_req, res)=>{
 .use("/productos", productsRouter)
 .use('/carrito', cartRouter)
 
-module.exports = router;
+export default router;

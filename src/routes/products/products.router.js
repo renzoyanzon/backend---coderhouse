@@ -1,65 +1,45 @@
-const express = require("express");
-const authMiddleware = require("../../middlewares/authMiddleware")
+import express from "express";
+import _ from "lodash";
+import { v4 as uuidv4 } from "uuid";
+import authMiddleware from "../../middlewares/authMiddleware.js";
+
 const router = express.Router();
 
+/* const ProductService = require('../../services/db/products/products.knex');
+const products = new ProductService(); */
 
-const ProductService = require('../../services/db/products/products.knex');
-const products = new ProductService();
+import { getProductModule } from '../../daos/index.js'
 
-
-router.get('/',async (_req,res,next)=>{
-    try {
-        const data = await products.getAll();
-        res.status(200).json(data)
-    } catch (error) {
-        next(error)
-    }
-    
-}) 
-
-router.post ('/', authMiddleware, async (req,res,next)=>{
-    try {
-        const {body}= req;
-        const data = await products.createProduct(body);
-        res.status(200).json(data)
-        
-    } catch (error) {
-        next(error)
-    } 
-})
-
-router.get('/:id',authMiddleware,async (req,res,next)=>{
-    try {
-        const id =req.params.id;
-        const data = await products.getById(id);
-        res.status(200).json(data)
-
-    } catch (error) {
-        next(error)
+router.get("/", async (_req, res, next) => {
+    try{
+        const products = await getProductModule();
+        const product = new products();
+        const data = await product.getAllProducts();
+        if(!data.success) res.status(500).json(data)
+        res.status(200).json(data);
+    } catch {
+        next(err)
     }
 })
 
-router.put('/:id', async(req,res,next)=>{
-    try {
-        const id = req.params.id;
-        const {body}= req;
-        const data = await products.updateById(id,body)
-        res.status(200).json(data)
+router.post("/", authMiddleware, async (req, res, next) => {
+    try{
+        const { body } = req;
+        if(_.isNil(body)) res.status(400).json({success:false, message: "ERROR (body missing)"})
+        Object.assign(body, {
+            uuid: uuidv4(),
+            timestamp: Date.now()
+        });
+        const products = await getProductModule();
+        const product = new products();
 
-    } catch (error) {
-       next(error) 
+        const data = await product.createProduct(body);
+        console.log("datapost",data)
+        if(!data.success) res.status(500).json(data)
+        res.status(200).json(data);
+    } catch(err) {
+        next(err);
     }
 })
 
-router.delete('/:id',authMiddleware,async(req,res,next)=>{
-    try {
-        const {id}  = req.params;
-        const data = await products.deleteById(id);
-        res.status(200).json(data)
-
-    } catch (error) {
-        next(error)
-    }
-})
-
-module.exports = router;
+export default router;

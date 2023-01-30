@@ -1,7 +1,10 @@
-fs = require("fs");
-
+import fs from "fs";
+import path from 'path';
+import { fileURLToPath } from 'url';
 class CartServices{
     constructor(){
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
         this.ruta = __dirname + "/cart.json";
     }
 
@@ -120,4 +123,4 @@ class CartServices{
     }
 }
 
-module.exports = CartServices;
+export default CartServices;

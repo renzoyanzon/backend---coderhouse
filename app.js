@@ -1,8 +1,9 @@
-const express = require("express");
-const indexRouter = require("./src/routes/index");
-const errorMiddleware = require("./src/middlewares/errorMiddleware")
-const _=require("lodash");
-require("dotenv").config();
+import express from 'express'; 
+import indexRouter from "./src/routes/index.js";
+import errorMiddleware from"./src/middlewares/errorMiddleware.js";
+//const _=require("lodash");
+import dotenv from 'dotenv'
+dotenv.config(); //Declaración para uso de .env
 
 const app = express();
 
@@ -12,4 +13,4 @@ app.use(express.urlencoded({extended: true}));
 app.use("/api", indexRouter);
 app.use(errorMiddleware)  
 
-module.exports = app;
+export default app;

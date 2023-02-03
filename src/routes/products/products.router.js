@@ -2,6 +2,7 @@ import express from "express";
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import authMiddleware from "../../middlewares/authMiddleware.js";
+import errorMiddleware from "../../middlewares/errorMiddleware.js";
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.get("/", async (_req, res, next) => {
         const data = await product.getAllProducts();
         if(!data.success) res.status(500).json(data)
         res.status(200).json(data);
-    } catch {
+    } catch (err){
         next(err)
     }
 })

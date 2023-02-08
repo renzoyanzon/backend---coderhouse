@@ -9,7 +9,7 @@
   <body class="d-flex flex-column w-100 align-items-center justify-content-center bg-dark text-light">
     <h1>Productos</h1>
 
-    <% if (mockDatalength > 0) { %> 
+    <% if (mockData.length > 0) { %> 
     <table class="table table-dark table-striped-columns w-50">
         <thead>
           <tr>
@@ -19,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          <% products.forEach( item => { %>
+          <% mockData.forEach( item => { %>
             <tr>
               <th scope="row"><%= item.title %></th>
               <td><%= item.price %> </td>

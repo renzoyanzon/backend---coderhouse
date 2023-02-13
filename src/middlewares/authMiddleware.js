@@ -1,10 +1,10 @@
-const authMiddleware = (_req, res, next) => {
-    let administrator = true;
-    if (administrator == false) res.status(500).json({
-        error: -1,
-        descripcion: "No tiene privilegios de administrador"
-    })
-    console.info("Pasó la auditoria")
-    next()
+const authMiddleware = (req, res, next) => {
+    console.info("auth", req.session.username);
+    if(!req.session.username || !req.session.password){
+        return res.render('/signin/signin')
+    }
+    next();
 }
-export default authMiddleware;
+
+export default authMiddleware
+

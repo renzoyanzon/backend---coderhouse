@@ -10,6 +10,12 @@ import ProductMock from './src/services/mock/mock.services.js';
 import fs from 'fs';
 import normalizeChat from './src/services/utils/normChat.js';
 
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import sessionFileStore from 'session-file-store';
+const FileStore = sessionFileStore(session);
+import MongoStore from 'connect-mongo';
+
 import path from 'path';
 import {fileURLToPath} from 'url';
 const __filename = fileURLToPath(import.meta.url);
@@ -23,8 +29,7 @@ const io = new IoServer(http);
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.use("/api", indexRouter);
-app.use(errorMiddleware);
+
 
 app.use("/static",express.static(__dirname + "/public"));
 app.use(express.static(path.join(__dirname, 'public')))
@@ -34,11 +39,75 @@ app.set("view engine", "ejs");
 
 const productMock = new ProductMock();
 
-app.get("/", async (_req,res)=>{
+app.get("/form", async (_req,res)=>{
 
     const mockData = await productMock.getProductsMock()
     res.render("pages/form",{mockData})
 });
+
+app.get("/", async (_req,res)=>{
+    res.render("signin/signin")
+});
+
+//configuracion de session and cookies
+
+const COOKIES_SECRET = process.env.COOKIES_SECRET || '';
+app.use(cookieParser(COOKIES_SECRET));
+
+if(process.env.SESSION_STORAGE == "MONGO_ATLAS"){
+    console.info("MONGO ATLAS STORAGE");
+    const mongoConfig = {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }
+    const storeConfig = {
+        mongoUrl: process.env.MONGO_ATLAS_URL,
+        mongoOptions: mongoConfig
+    }
+    app.use(session({
+        store:  MongoStore.create(storeConfig),
+        secret: process.env.COOKIES_SECRET,
+        resave: true,
+        saveUninitialized: true
+    }))
+}
+
+if(process.env.SESSION_STORAGE == "MONGO_DB"){
+    console.info("MONGO DB STORAGE");
+    const mongoConfig = {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }
+    const storeConfig = {
+        mongoUrl: process.env.MONGO_LOCAL_URL,
+        mongoOptions: mongoConfig
+    }
+    app.use(session({
+        store:  MongoStore.create(storeConfig),
+        secret: process.env.COOKIES_SECRET,
+        resave: true,
+        saveUninitialized: true
+    }))
+}
+
+
+if(process.env.SESSION_STORAGE == "FILE_STORE"){
+    console.info("FILE-STORE STORAGE")
+    const fileStoreConfig = {
+        path: './session',
+        ttl: 300,
+        retries: 5
+    }
+    app.use(session({
+        store: new FileStore(fileStoreConfig),
+        secret: COOKIES_SECRET,
+        resave: true,
+        saveUninitialized: true
+    }))
+}
+
+app.use(indexRouter);
+app.use(errorMiddleware);
 
 // Utilizacion de socket para la comunicacion bidireccional del chat
 // Coneccion de socket

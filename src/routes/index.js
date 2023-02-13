@@ -7,6 +7,8 @@ import productsRouter from "./products/products.router.js";
 import cartRouter from './carts/cart.router.js';
 import ProductMock from "../services/mock/mock.services.js";
 
+import cookiesRouter from './cookies/cookies.routes.js';
+import sessionRouter from './session/session.routes.js';
 
 router.get("/health", (_req, res)=>{
     res.status(200).json({
@@ -17,6 +19,8 @@ router.get("/health", (_req, res)=>{
 })
 .use("/productos", productsRouter)
 .use('/carrito', cartRouter)
+.use('/cookies', cookiesRouter)
+.use('/',sessionRouter)
 
 
 const productMock = new ProductMock();
